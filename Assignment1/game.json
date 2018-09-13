@@ -1,0 +1,38 @@
+{
+  "Table": {
+    "colour": "green",
+    "friction": "1",
+    "size": {
+      "x": "800",
+      "y": "400"
+    }
+  },
+  "Balls": {
+    "ball": [
+      {
+        "colour": "white",
+        "position": {
+          "x": "20",
+          "y": "50"
+        },
+        "velocity": {
+          "x": "1",
+          "y": "1"
+        },
+        "mass": "1"
+      },
+      {
+        "colour": "red",
+        "position": {
+          "x": "25",
+          "y": "45"
+        },
+        "velocity": {
+          "x": "-1",
+          "y": "-1"
+        },
+        "mass": "1"
+      }
+    ]
+  }
+}
