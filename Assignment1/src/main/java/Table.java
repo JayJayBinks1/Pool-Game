@@ -1,4 +1,5 @@
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
@@ -23,7 +24,7 @@ public class Table {
         this.height = Integer.parseInt(contents[2]);
         this.friction = Integer.parseInt(contents[3]);
         this.table = new Rectangle(75, 75, this.width, this.height);
-        this.table.setFill(Color.DARKGREEN);
+        this.table.setFill(Paint.valueOf(this.colour));
         this.table.setStroke(Color.rgb(165, 70, 7));
         this.table.setStrokeWidth(50);
     }
@@ -31,6 +32,10 @@ public class Table {
     public String getColour() {return this.colour;}
 
     public int getFriction() {return this.friction;}
+
+    public int getWidth() {return this.width;}
+
+    public int getHeight() {return this.height;}
 
     public Rectangle getShape() {return this.table;}
 
