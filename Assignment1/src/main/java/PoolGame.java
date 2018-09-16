@@ -189,6 +189,9 @@ public class PoolGame extends Application {
                             if (distance <= 30) {
                                 poolBalls.remove(i);
                                 pane.getChildren().remove(ball.getBall());
+//                                if (ball.getColour().equalsIgnoreCase("white")) {
+//                                    stop();
+//                                }
                             }
                         }
 
