@@ -152,9 +152,6 @@ public class PoolGame extends Application {
             });
 
             pane.setOnMouseReleased(event -> {
-//                Line line = new Line(cue.getStartX(), cue.getStartY(), cue.getEndX(), cue.getEndY());
-//                line.setStroke(Paint.valueOf(table.getColour()));
-//                line.setStrokeWidth(5);
                 pane.getChildren().remove(cue);
                 isCueSet = true;
             });
@@ -182,6 +179,17 @@ public class PoolGame extends Application {
 
                         if (ball.getyVelocity() == 0.0) {
                             ball.setyVelocity(0.000001);
+                        }
+
+                        for (Circle hole : holes) {
+                            double deltaX = ball.getxPosition() - hole.getCenterX();
+                            double deltaY = ball.getyPosition() - hole.getCenterY();
+                            double distance = Math.sqrt((deltaX*deltaX) + (deltaY*deltaY));
+
+                            if (distance <= 20) {
+                                poolBalls.remove(i);
+                                pane.getChildren().remove(ball.getBall());
+                            }
                         }
 
                         if (isCueSet && ball.getColour().equalsIgnoreCase("white") && ball.getxVelocity() == 0.000001 && ball.getyVelocity() == 0.000001) {
