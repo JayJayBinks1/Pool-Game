@@ -6,6 +6,8 @@ public class Ball {
     private String colour;
     private double xPosition;
     private double yPosition;
+    private double xInitialVel;
+    private double yInitialVel;
     private double xVelocity;
     private double yVelocity;
     private double mass;
@@ -20,6 +22,8 @@ public class Ball {
         this.mass = mass;
         this.ball = new Circle(this.xPosition, this.yPosition, 15, Paint.valueOf(colour));
     }
+
+    public String getColour() { return colour; }
 
     public double getxPosition() {return this.xPosition;}
 
@@ -40,6 +44,10 @@ public class Ball {
     }
 
     public void setyVelocity(double yVelocity) { this.yVelocity = yVelocity; }
+
+    public double getxInitialVel() { return xInitialVel; }
+
+    public double getyInitialVel() { return yInitialVel; }
 
     public double getMass() {return this.mass;}
 
