@@ -31,9 +31,9 @@ public class PoolGame extends Application {
 
         //calculate the axis of collision
         Point2D collisionVector = posB.subtract(posA);
-        System.out.println(collisionVector);
+        //System.out.println(collisionVector);
         collisionVector = collisionVector.normalize();
-        System.out.println(collisionVector);
+        //System.out.println(collisionVector);
 
         //the proportion of each balls velocity along the axis of collision
         double vA = collisionVector.dotProduct(velA);
