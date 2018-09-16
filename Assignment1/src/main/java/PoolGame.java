@@ -186,7 +186,7 @@ public class PoolGame extends Application {
                             double deltaY = ball.getyPosition() - hole.getCenterY();
                             double distance = Math.sqrt((deltaX*deltaX) + (deltaY*deltaY));
 
-                            if (distance <= 20) {
+                            if (distance <= 30) {
                                 poolBalls.remove(i);
                                 pane.getChildren().remove(ball.getBall());
                             }

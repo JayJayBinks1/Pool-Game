@@ -49,7 +49,7 @@ public class Table {
                 y += (height-50);
                 holeNum = 0;
             }
-            circles[i] = new Circle(x+holeNum*((width-50)/2), y, 30, Color.BLACK);
+            circles[i] = new Circle(x+holeNum*((width-50)/2), y, 40, Color.BLACK);
             holeNum++;
         }
         return circles;
