@@ -15,6 +15,23 @@ public class Ball {
 
     public Ball(String colour, double xPosition, double yPosition, double xVelocity, double yVelocity, double mass) {
         this.colour = colour;
+
+//        if (xPosition <= 50) {
+//            this.xPosition = 75+xPosition;
+//        }
+//
+//        else {
+//            this.xPosition = xPosition-25;
+//        }
+//
+//        if (yPosition <= 50) {
+//            this.yPosition = 75+yPosition;
+//        }
+//
+//        else {
+//            this.yPosition = yPosition-25;
+//        }
+
         this.xPosition = xPosition;
         this.yPosition = yPosition;
         this.xVelocity = xVelocity;

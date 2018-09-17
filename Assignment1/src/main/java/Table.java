@@ -23,7 +23,7 @@ public class Table {
         this.width = Integer.parseInt(contents[1]);
         this.height = Integer.parseInt(contents[2]);
         this.friction = Integer.parseInt(contents[3]);
-        this.table = new Rectangle(75, 75, this.width, this.height);
+        this.table = new Rectangle(25, 25, this.width, this.height);
         this.table.setFill(Paint.valueOf(this.colour));
         this.table.setStroke(Color.rgb(165, 70, 7));
         this.table.setStrokeWidth(50);
@@ -41,15 +41,15 @@ public class Table {
 
     public Circle[] getHoles() {
         Circle circles[] = new Circle[6];
-        int x = 100;
-        int y = 100;
+        int x = 50;
+        int y = 50;
         int holeNum = 0;
         for (int i = 0; i < 6; i++) {
             if (i == 3) {
                 y += (height-50);
                 holeNum = 0;
             }
-            circles[i] = new Circle(x+holeNum*((width-50)/2), y, 40, Color.BLACK);
+            circles[i] = new Circle(x+holeNum*((width-50)/2), y, 30, Color.BLACK);
             holeNum++;
         }
         return circles;

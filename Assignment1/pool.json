@@ -12,8 +12,8 @@
       {
         "colour": "white",
         "position": {
-          "x": "220",
-          "y": "150"
+          "x": "225",
+          "y": "200"
         },
         "velocity": {
           "x": "0",
@@ -24,8 +24,8 @@
       {
         "colour": "red",
         "position": {
-          "x": "40",
-          "y": "30"
+          "x": "400",
+          "y": "200"
         },
         "velocity": {
           "x": "0",
@@ -37,8 +37,8 @@
       {
         "colour": "yellow",
         "position": {
-          "x": "625",
-          "y": "0"
+          "x": "430",
+          "y": "200"
         },
         "velocity": {
           "x": "0",
@@ -50,8 +50,8 @@
       {
         "colour": "blue",
         "position": {
-          "x": "546",
-          "y": "240"
+          "x": "415",
+          "y": "170"
         },
         "velocity": {
           "x": "0",
@@ -63,8 +63,8 @@
       {
         "colour": "orange",
         "position": {
-          "x": "0",
-          "y": "120"
+          "x": "415",
+          "y": "230"
         },
         "velocity": {
           "x": "0",
@@ -76,7 +76,7 @@
       {
         "colour": "purple",
         "position": {
-          "x": "800",
+          "x": "799",
           "y": "130"
         },
         "velocity": {
@@ -103,7 +103,7 @@
         "colour": "indigo",
         "position": {
           "x": "570",
-          "y": "400"
+          "y": "385"
         },
         "velocity": {
           "x": "0",
