@@ -247,7 +247,7 @@ public class PoolGame extends Application {
                                 }
 
                                 else if (cueLength < length/2 && cueLength >= length/4) {
-                                    System.out.println("0.5");
+                                    System.out.println("0.75");
                                     xVelocity = 0.5;
                                     yVelocity = 0.5;
                                 }
