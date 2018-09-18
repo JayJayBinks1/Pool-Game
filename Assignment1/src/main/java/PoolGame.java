@@ -24,10 +24,134 @@ import java.util.ArrayList;
 public class PoolGame extends Application {
     
     private static String[] arguments;
+    private Line cue;
+    private boolean isCueSet = false;
+    private final double restState = 0.000001;
 
     public static void main(String[] args) {
         arguments = args;
         launch(args);
+    }
+
+    public JSONObject getConfig(String argument) {
+        File file = new File(argument);
+        JSONObject objects = null;
+        try {
+            FileReader reader = new FileReader(file);
+            JSONParser parser = new JSONParser();
+            objects = (JSONObject) parser.parse(reader);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return objects;
+    }
+
+    public void addHoles(Pane pane, Table table) {
+        Circle holes[] = table.getHoles();
+
+        for (Circle hole : holes) {
+            pane.getChildren().addAll(hole);
+        }
+    }
+
+    public void adjustBallPositions(Pane pane, ArrayList<Ball> poolBalls, Table table) {
+
+        for (Ball ball : poolBalls) {
+            if (ball.getxPosition() <= 50) {
+                ball.setxPosition(ball.getxPosition()+75);
+            }
+            else if (ball.getxPosition() >= table.getWidth()-25) {
+                ball.setxPosition(ball.getxPosition()-25);
+            }
+
+            else if (ball.getxPosition() < (table.getWidth()- 40)) {
+                ball.setxPosition(ball.getxPosition()+25);
+            }
+
+            if (ball.getyPosition() <= 50) {
+                ball.setyPosition(ball.getyPosition()+75);
+            }
+            else if (ball.getyPosition() >= table.getHeight()-15) {
+                ball.setyPosition(ball.getyPosition()-25);
+            }
+            else if (ball.getyPosition() < (table.getHeight()-40)){
+                ball.setyPosition(ball.getyPosition()+25);
+            }
+            pane.getChildren().add(ball.getBall());
+        }
+    }
+
+    public void setMouseEvents(Pane pane) {
+
+        pane.setOnMousePressed(event -> {
+            isCueSet = false;
+            cue = new Line(event.getX(), event.getY(), event.getX(), event.getY());
+            cue.setStrokeWidth(5);
+            cue.setStroke(Color.BURLYWOOD);
+            pane.getChildren().add(cue);
+        });
+
+        pane.setOnMouseDragged(event -> {
+            cue.setEndX(event.getX());
+            cue.setEndY(event.getY());
+        });
+
+        pane.setOnMouseReleased(event -> {
+            pane.getChildren().remove(cue);
+            isCueSet = true;
+        });
+    }
+
+    public Pane setUpGame(Stage primaryStage, Table table, ArrayList<Ball> poolBalls) throws Exception {
+        Rectangle tableShape = table.getShape();
+
+        Pane pane = new Pane();  //The root of scene graph is a layout node
+        // Creating a Scene by passing the group object, height and width
+        Scene scene = new Scene(pane,tableShape.getWidth()+50,tableShape.getHeight()+50);
+        //setting color to the scene
+        scene.setFill(Color.BLACK);
+
+        pane.getChildren().add(tableShape);
+
+        addHoles(pane, table);
+
+        adjustBallPositions(pane, poolBalls, table);
+
+        setMouseEvents(pane);
+
+        //Setting the title to Pool Game.
+        primaryStage.setTitle("Pool Game");
+
+        //Adding the scene to Stage
+        primaryStage.setScene(scene);
+        //Displaying the contents of the stage
+        primaryStage.show();
+
+        return pane;
+    }
+
+    public void setUpCollision(Ball ball, Ball otherBall) {
+        Point2D ballPos = new Point2D(ball.getxPosition(), ball.getyPosition());
+        Point2D ballVel = new Point2D(ball.getxVelocity(), ball.getyVelocity());
+        double ballMass = ball.getMass();
+
+        Point2D otherPos = new Point2D(otherBall.getxPosition(), otherBall.getyPosition());
+        Point2D otherVel = new Point2D(otherBall.getxVelocity(), otherBall.getyVelocity());
+        double otherMass = otherBall.getMass();
+
+        Point2D newVels[] = collide(ballPos, ballVel, ballMass, otherPos, otherVel, otherMass);
+
+        if (newVels != null) {
+            ballVel = newVels[0];
+            otherVel = newVels[1];
+
+            ball.setxVelocity(ballVel.getX());
+            ball.setyVelocity(ballVel.getY());
+
+            otherBall.setxVelocity(otherVel.getX());
+            otherBall.setyVelocity(otherVel.getY());
+        }
     }
 
     public Point2D[] collide(Point2D posA, Point2D velA, double massA, Point2D posB, Point2D velB, double massB) {
@@ -78,22 +202,115 @@ public class PoolGame extends Application {
         return newVels;
     }
 
-    private Line cue;
-    private boolean isCueSet = false;
-    boolean removeLine = false;
+    public void moveBall(Ball ball) {
+        ball.setxPosition((ball.getxPosition()+ball.getxVelocity()));
+        ball.setyPosition((ball.getyPosition()+ball.getyVelocity()));
+    }
+
+    public void setToRest(Ball ball) {
+        if (ball.getxVelocity() == 0.0) {
+            ball.setxVelocity(restState);
+        }
+
+        if (ball.getyVelocity() == 0.0) {
+            ball.setyVelocity(restState);
+        }
+    }
+
+    public void fallInPocket(Pane pane, Ball ball, Circle holes[], ArrayList<Ball> poolBalls) {
+        for (Circle hole : holes) {
+            double distance = calculateDistance(ball.getxPosition(), ball.getyPosition(), hole.getCenterX(), hole.getCenterY());
+
+            if (distance <= 30) {
+                poolBalls.remove(ball);
+                pane.getChildren().remove(ball.getBall());
+            }
+        }
+    }
+
+    public double calculateDistance(double x1, double y1, double x2, double y2) {
+        double deltaX = x1 - x2;
+        double deltaY = y1 - y2;
+        return Math.sqrt((deltaX*deltaX) + (deltaY*deltaY));
+    }
+
+    public Point2D getCueDirection(Ball ball, double xVelocity, double yVelocity) {
+
+        if (cue.getEndX() >= ball.getxPosition()) {
+            xVelocity *= -1;
+        }
+
+        if (cue.getEndY() >= ball.getyPosition()) {
+            yVelocity *= -1;
+        }
+
+        return new Point2D(xVelocity, yVelocity);
+    }
+
+    public Point2D findCueVelocity(Ball ball, Table table) {
+
+        double xVelocity = 0;
+        double yVelocity = 0;
+        double length = table.getWidth()/2;
+
+        double cueLength = calculateDistance(cue.getStartX(), cue.getStartY(), cue.getEndX(), cue.getEndY());
+
+        if (cueLength >= length) {
+            //System.out.println("1.5");
+            xVelocity = 1.5;
+            yVelocity = 1.5;
+        }
+
+        else if (cueLength < length && cueLength >= length/2) {
+            //System.out.println("1.0");
+            xVelocity = 1;
+            yVelocity = 1;
+        }
+
+        else if (cueLength < length/2 && cueLength >= length/4) {
+            //System.out.println("0.75");
+            xVelocity = 0.5;
+            yVelocity = 0.5;
+        }
+
+        else if (cueLength < length/4) {
+            //System.out.println("0.25");
+            xVelocity = 0.25;
+            yVelocity = 0.25;
+        }
+
+        return getCueDirection(ball, xVelocity, yVelocity);
+    }
+
+    public void strikeBall(Ball ball, Table table) {
+
+        Double distance = calculateDistance(ball.getxPosition(), ball.getyPosition(), cue.getStartX(), cue.getStartY());
+
+        if (distance <= 15) {
+
+            Point2D ballPos = new Point2D(ball.getxPosition(), ball.getyPosition());
+            Point2D ballVel = new Point2D(ball.getxVelocity(), ball.getyVelocity());
+            double ballMass = ball.getMass();
+
+            Point2D otherPos = new Point2D(cue.getEndX(), cue.getEndY());
+            Point2D otherVel = findCueVelocity(ball, table);
+            double otherMass = 1;
+
+            Point2D newVels[] = collide(ballPos, ballVel, ballMass, otherPos, otherVel, otherMass);
+
+            if (newVels != null) {
+                ballVel = newVels[0];
+                ball.setxVelocity(ballVel.getX());
+                ball.setyVelocity(ballVel.getY());
+            }
+
+            isCueSet = false;
+        }
+    }
 
     @Override
     public void start(Stage primaryStage) {
-        File file = new File(arguments[0]);
-        JSONObject objects = null;
-        try {
-            FileReader reader = new FileReader(file);
-            JSONParser parser = new JSONParser();
-            objects = (JSONObject) parser.parse(reader);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
-        }
+        JSONObject objects = getConfig(arguments[0]);
 
         JSONObject tableContents = (JSONObject) objects.get("Table");
         Table table = new Table(tableContents);
@@ -114,177 +331,24 @@ public class PoolGame extends Application {
 
         try {
 
-            Rectangle tableShape = table.getShape();
-
-            Canvas canvas = new Canvas(tableShape.getWidth()+50, tableShape.getHeight()+50);
-
-            Pane pane = new Pane();  //The root of scene graph is a layout node
-            // Creating a Scene by passing the group object, height and width
-            Scene scene = new Scene(pane,tableShape.getWidth()+50,tableShape.getHeight()+50);
-            //setting color to the scene
-            scene.setFill(Color.BLACK);
-
-            pane.getChildren().add(tableShape);
-
+            Pane pane = setUpGame(primaryStage, table, poolBalls);
             Circle holes[] = table.getHoles();
 
-            for (Circle hole : holes) {
-                pane.getChildren().addAll(hole);
-            }
-
-            for (Ball ball : poolBalls) {
-                if (ball.getxPosition() <= 50) {
-                    ball.setxPosition(ball.getxPosition()+75);
-                }
-                else if (ball.getxPosition() >= table.getWidth()-25) {
-                    ball.setxPosition(ball.getxPosition()-25);
-                }
-
-                else if (ball.getxPosition() < (table.getWidth()- 40)) {
-                    ball.setxPosition(ball.getxPosition()+25);
-                }
-
-                if (ball.getyPosition() <= 50) {
-                    ball.setyPosition(ball.getyPosition()+75);
-                }
-                else if (ball.getyPosition() >= table.getHeight()-15) {
-                    ball.setyPosition(ball.getyPosition()-25);
-                }
-                else if (ball.getyPosition() < (table.getHeight()-40)){
-                    ball.setyPosition(ball.getyPosition()+25);
-                }
-                pane.getChildren().add(ball.getBall());
-            }
-
-            pane.setOnMousePressed(event -> {
-                isCueSet = false;
-                cue = new Line(event.getX(), event.getY(), event.getX(), event.getY());
-                cue.setStrokeWidth(5);
-                cue.setStroke(Color.BURLYWOOD);
-                pane.getChildren().add(cue);
-            });
-
-            pane.setOnMouseDragged(event -> {
-                cue.setEndX(event.getX());
-                cue.setEndY(event.getY());
-            });
-
-            pane.setOnMouseReleased(event -> {
-                pane.getChildren().remove(cue);
-                isCueSet = true;
-            });
-
-            //Setting the title to Stage.
-            primaryStage.setTitle("Pool Game");
-
-            //Adding the scene to Stage
-            primaryStage.setScene(scene);
-            //Displaying the contents of the stage
-            primaryStage.show();
-//            System.out.println(table.getFriction());
             AnimationTimer animator = new AnimationTimer() {
                 @Override
                 public void handle(long now) {
 
                     for (int i = 0; i < poolBalls.size(); i++) {
                         Ball ball = poolBalls.get(i);
-                        ball.setxPosition((ball.getxPosition()+ball.getxVelocity()));
-                        ball.setyPosition((ball.getyPosition()+ball.getyVelocity()));
 
-                        if (ball.getxVelocity() == 0.0) {
-                            ball.setxVelocity(0.000001);
-                        }
+                        moveBall(ball);
 
-                        if (ball.getyVelocity() == 0.0) {
-                            ball.setyVelocity(0.000001);
-                        }
+                        setToRest(ball);
 
-                        for (Circle hole : holes) {
-                            double deltaX = ball.getxPosition() - hole.getCenterX();
-                            double deltaY = ball.getyPosition() - hole.getCenterY();
-                            double distance = Math.sqrt((deltaX*deltaX) + (deltaY*deltaY));
+                        fallInPocket(pane,ball, holes, poolBalls);
 
-                            if (distance <= 30) {
-                                poolBalls.remove(i);
-                                pane.getChildren().remove(ball.getBall());
-//                                if (ball.getColour().equalsIgnoreCase("white")) {
-//                                    stop();
-//                                }
-                            }
-                        }
-
-                        if (isCueSet && ball.getColour().equalsIgnoreCase("white") && ball.getxVelocity() == 0.000001 && ball.getyVelocity() == 0.000001) {
-
-                            double deltaX = ball.getxPosition() - cue.getStartX();
-                            double deltaY = ball.getyPosition() - cue.getStartY();
-                            double distance = Math.sqrt((deltaX*deltaX) + (deltaY*deltaY));
-                            if (distance <= 15) {
-
-                                Point2D ballPos = new Point2D(ball.getxPosition(), ball.getyPosition());
-                                Point2D ballVel = new Point2D(ball.getxVelocity(), ball.getyVelocity());
-                                double ballMass = ball.getMass();
-
-                                Point2D otherPos = new Point2D(cue.getEndX(), cue.getEndY());
-                                double xVelocity = 0;
-                                double yVelocity = 0;
-
-                                double length = table.getWidth()/2;
-
-                                deltaX = cue.getStartX() - cue.getEndX();
-                                deltaY = cue.getStartY() - cue.getEndY();
-                                double cueLength = Math.sqrt((deltaX*deltaX)+(deltaY*deltaY));
-
-                                if (cueLength >= length) {
-                                    System.out.println("1.5");
-                                    xVelocity = 1.5;
-                                    yVelocity = 1.5;
-                                }
-
-                                else if (cueLength < length && cueLength >= length/2) {
-                                    System.out.println("1.0");
-                                    xVelocity = 1;
-                                    yVelocity = 1;
-                                }
-
-                                else if (cueLength < length/2 && cueLength >= length/4) {
-                                    System.out.println("0.75");
-                                    xVelocity = 0.5;
-                                    yVelocity = 0.5;
-                                }
-
-                                else if (cueLength < length/4) {
-                                    System.out.println("0.25");
-                                    xVelocity = 0.25;
-                                    yVelocity = 0.25;
-                                }
-
-                                if (cue.getEndX() >= ball.getxPosition()) {
-                                    xVelocity *= -1;
-                                }
-
-                                if (cue.getEndY() >= ball.getyPosition()) {
-                                    yVelocity *= -1;
-                                }
-
-                                Point2D otherVel = new Point2D(xVelocity, yVelocity);
-                                double otherMass = 1;
-
-                                Point2D newVels[] = collide(ballPos, ballVel, ballMass, otherPos, otherVel, otherMass);
-
-                                if (newVels == null) {
-                                    continue;
-                                }
-
-                                ballVel = newVels[0];
-
-                                ball.setxVelocity(ballVel.getX());
-                                ball.setyVelocity(ballVel.getY());
-
-                                isCueSet = false;
-                                //pane.getChildren().remove(cue);
-                                removeLine = true;
-
-                            }
+                        if (isCueSet && ball.getColour().equalsIgnoreCase("white") && ball.getxVelocity() == restState && ball.getyVelocity() == restState) {
+                            strikeBall(ball, table);
                         }
 
                         for (int j = 0; j < poolBalls.size(); j++) {
@@ -294,34 +358,10 @@ public class PoolGame extends Application {
 
                             Ball otherBall = poolBalls.get(j);
 
-                            double deltaX = ball.getxPosition() - otherBall.getxPosition();
-                            double deltaY = ball.getyPosition() - otherBall.getyPosition();
-                            double distance = Math.sqrt((deltaX*deltaX) + (deltaY*deltaY));
+                            double distance = calculateDistance(ball.getxPosition(), ball.getyPosition(), otherBall.getxPosition(), otherBall.getyPosition());
 
                             if (distance <= 30) {
-                                Point2D ballPos = new Point2D(ball.getxPosition(), ball.getyPosition());
-                                Point2D ballVel = new Point2D(ball.getxVelocity(), ball.getyVelocity());
-                                double ballMass = ball.getMass();
-
-                                Point2D otherPos = new Point2D(otherBall.getxPosition(), otherBall.getyPosition());
-                                Point2D otherVel = new Point2D(otherBall.getxVelocity(), otherBall.getyVelocity());
-                                double otherMass = otherBall.getMass();
-
-                                Point2D newVels[] = collide(ballPos, ballVel, ballMass, otherPos, otherVel, otherMass);
-
-                                if (newVels == null) {
-                                    continue;
-                                }
-
-                                ballVel = newVels[0];
-                                otherVel = newVels[1];
-
-                                ball.setxVelocity(ballVel.getX());
-                                ball.setyVelocity(ballVel.getY());
-
-                                otherBall.setxVelocity(otherVel.getX());
-                                otherBall.setyVelocity(otherVel.getY());
-
+                                setUpCollision(ball, otherBall);
                             }
                         }
 
@@ -348,7 +388,7 @@ public class PoolGame extends Application {
                         }
 
                         if (ball.getxVelocity() <= 0.001 && ball.getxVelocity() > -0.001) {
-                            ball.setxVelocity(0.000001);
+                            ball.setxVelocity(restState);
                         }
 
                         if (ball.getyVelocity() > 0) {
@@ -360,7 +400,7 @@ public class PoolGame extends Application {
                         }
 
                         if (ball.getyVelocity() <= 0.001 && ball.getyVelocity() > -0.001) {
-                            ball.setyVelocity(0.000001);
+                            ball.setyVelocity(restState);
                         }
 
                     }
