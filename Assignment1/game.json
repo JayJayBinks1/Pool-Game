@@ -3,8 +3,8 @@
     "colour": "green",
     "friction": "1",
     "size": {
-      "x": "800",
-      "y": "400"
+      "x": "600",
+      "y": "300"
     }
   },
   "Balls": {
@@ -37,8 +37,8 @@
       {
         "colour": "yellow",
         "position": {
-          "x": "625",
-          "y": "0"
+          "x": "325",
+          "y": "100"
         },
         "velocity": {
           "x": "0",

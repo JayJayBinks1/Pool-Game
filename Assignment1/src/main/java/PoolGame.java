@@ -106,7 +106,7 @@ public class PoolGame extends Application {
     private Pane setUpGame(Stage primaryStage, Table table, ArrayList<Ball> poolBalls) {
         Rectangle tableShape = table.getShape();
 
-        Pane pane = new Pane();  //The root of scene graph is a layout node
+        Pane pane = new Pane();
         // Creating a Scene by passing the group object, height and width
         Scene scene = new Scene(pane,tableShape.getWidth()+100,tableShape.getHeight()+100);
         //setting color to the scene
@@ -129,6 +129,23 @@ public class PoolGame extends Application {
         primaryStage.show();
 
         return pane;
+    }
+
+    private void detectCollisions(Ball ball, int ballIndex, ArrayList<Ball> poolBalls) {
+
+        for (int j = 0; j < poolBalls.size(); j++) {
+            if (ballIndex == j) {
+                continue;
+            }
+
+            Ball otherBall = poolBalls.get(j);
+
+            double distance = calculateDistance(ball.getxPosition(), ball.getyPosition(), otherBall.getxPosition(), otherBall.getyPosition());
+
+            if (distance <= 30) {
+                setUpCollision(ball, otherBall);
+            }
+        }
     }
 
     private void setUpCollision(Ball ball, Ball otherBall) {
@@ -343,6 +360,14 @@ public class PoolGame extends Application {
         }
     }
 
+    public boolean isAtRestState(Ball ball) {
+        return ball.getxVelocity() == restState && ball.getyVelocity() == restState;
+    }
+
+    public boolean isCueBall(Ball ball) {
+        return ball.getColour().equalsIgnoreCase("white");
+    }
+
     @Override
     public void start(Stage primaryStage) {
         JSONObject objects = getConfig(arguments[0]);
@@ -377,25 +402,13 @@ public class PoolGame extends Application {
 
                         setToRest(ball);
 
-                        fallInPocket(pane,ball, holes, poolBalls);
+                        fallInPocket(pane, ball, holes, poolBalls);
 
-                        if (isCueSet && ball.getColour().equalsIgnoreCase("white") && ball.getxVelocity() == restState && ball.getyVelocity() == restState) {
+                        if (isCueSet && isCueBall(ball) && isAtRestState(ball)) {
                             strikeBall(ball, table);
                         }
 
-                        for (int j = 0; j < poolBalls.size(); j++) {
-                            if (i == j) {
-                                continue;
-                            }
-
-                            Ball otherBall = poolBalls.get(j);
-
-                            double distance = calculateDistance(ball.getxPosition(), ball.getyPosition(), otherBall.getxPosition(), otherBall.getyPosition());
-
-                            if (distance <= 30) {
-                                setUpCollision(ball, otherBall);
-                            }
-                        }
+                        detectCollisions(ball, i, poolBalls);
 
                         bounceOffWalls(ball, table);
 
