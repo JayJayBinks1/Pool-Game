@@ -1,17 +1,12 @@
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.scene.*;
 import javafx.scene.paint.*;
 import javafx.scene.shape.*;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.canvas.GraphicsContext;
 
-import javafx.util.Pair;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -308,6 +303,44 @@ public class PoolGame extends Application {
         }
     }
 
+    public void bounceOffWalls(Ball ball, Table table) {
+        if ((ball.getxPosition() + 15 + ball.getxVelocity()) >= (table.getWidth()) || (ball.getxPosition() + 15 + ball.getxVelocity()) <= (75)) {
+            double xVelocity = ball.getxVelocity();
+            ball.setxVelocity(xVelocity *= -1);
+        }
+
+        if ((ball.getyPosition() + 15 + ball.getyVelocity()) >= (table.getHeight()) || (ball.getyPosition() + 15 + ball.getyVelocity()) <= (75)) {
+            double yVelocity = ball.getyVelocity();
+            ball.setyVelocity(yVelocity *= -1);
+        }
+    }
+
+    public void applyFriction(Ball ball, Table table) {
+        if (ball.getxVelocity() > 0) {
+            ball.setxVelocity(ball.getxVelocity() + (table.getFriction()*-(0.001)));
+        }
+
+        else if (ball.getxVelocity() < 0) {
+            ball.setxVelocity(ball.getxVelocity() - (table.getFriction()*-(0.001)));
+        }
+
+        if (ball.getxVelocity() <= 0.001 && ball.getxVelocity() > -0.001) {
+            ball.setxVelocity(restState);
+        }
+
+        if (ball.getyVelocity() > 0) {
+            ball.setyVelocity(ball.getyVelocity() + (table.getFriction()*-(0.001)));
+        }
+
+        else if (ball.getyVelocity() < 0) {
+            ball.setyVelocity(ball.getyVelocity() - (table.getFriction()*-(0.001)));
+        }
+
+        if (ball.getyVelocity() <= 0.001 && ball.getyVelocity() > -0.001) {
+            ball.setyVelocity(restState);
+        }
+    }
+
     @Override
     public void start(Stage primaryStage) {
         JSONObject objects = getConfig(arguments[0]);
@@ -365,43 +398,12 @@ public class PoolGame extends Application {
                             }
                         }
 
-                        if ((ball.getxPosition() + 15 + ball.getxVelocity()) >= (table.getWidth()) || (ball.getxPosition() + 15 + ball.getxVelocity()) <= (75)) {
-                            double xVelocity = ball.getxVelocity();
-                            ball.setxVelocity(xVelocity *= -1);
-                        }
-
-                        if ((ball.getyPosition() + 15 + ball.getyVelocity()) >= (table.getHeight()) || (ball.getyPosition() + 15 + ball.getyVelocity()) <= (75)) {
-                            double yVelocity = ball.getyVelocity();
-                            ball.setyVelocity(yVelocity *= -1);
-                        }
-
+                        bounceOffWalls(ball, table);
 
                         ball.getBall().setCenterX(ball.getxPosition());
                         ball.getBall().setCenterY(ball.getyPosition());
 
-                        if (ball.getxVelocity() > 0) {
-                            ball.setxVelocity(ball.getxVelocity() + (table.getFriction()*-(0.001)));
-                        }
-
-                        else if (ball.getxVelocity() < 0) {
-                            ball.setxVelocity(ball.getxVelocity() - (table.getFriction()*-(0.001)));
-                        }
-
-                        if (ball.getxVelocity() <= 0.001 && ball.getxVelocity() > -0.001) {
-                            ball.setxVelocity(restState);
-                        }
-
-                        if (ball.getyVelocity() > 0) {
-                            ball.setyVelocity(ball.getyVelocity() + (table.getFriction()*-(0.001)));
-                        }
-
-                        else if (ball.getyVelocity() < 0) {
-                            ball.setyVelocity(ball.getyVelocity() - (table.getFriction()*-(0.001)));
-                        }
-
-                        if (ball.getyVelocity() <= 0.001 && ball.getyVelocity() > -0.001) {
-                            ball.setyVelocity(restState);
-                        }
+                        applyFriction(ball, table);
 
                     }
                 }
