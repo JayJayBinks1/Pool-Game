@@ -28,7 +28,7 @@ public class PoolGame extends Application {
         launch(args);
     }
 
-    public JSONObject getConfig(String argument) {
+    private JSONObject getConfig(String argument) {
         File file = new File(argument);
         JSONObject objects = null;
         try {
@@ -42,7 +42,7 @@ public class PoolGame extends Application {
         return objects;
     }
 
-    public void addHoles(Pane pane, Table table) {
+    private void addHoles(Pane pane, Table table) {
         Circle holes[] = table.getHoles();
 
         for (Circle hole : holes) {
@@ -50,7 +50,7 @@ public class PoolGame extends Application {
         }
     }
 
-    public void adjustBallPositions(Pane pane, ArrayList<Ball> poolBalls, Table table) {
+    private void adjustBallPositions(Pane pane, ArrayList<Ball> poolBalls, Table table) {
 
         for (Ball ball : poolBalls) {
             if (ball.getxPosition() <= 50) {
@@ -77,7 +77,7 @@ public class PoolGame extends Application {
         }
     }
 
-    public void setMouseEvents(Pane pane) {
+    private void setMouseEvents(Pane pane) {
 
         pane.setOnMousePressed(event -> {
             isCueSet = false;
@@ -98,7 +98,7 @@ public class PoolGame extends Application {
         });
     }
 
-    public Pane setUpGame(Stage primaryStage, Table table, ArrayList<Ball> poolBalls) throws Exception {
+    private Pane setUpGame(Stage primaryStage, Table table, ArrayList<Ball> poolBalls) {
         Rectangle tableShape = table.getShape();
 
         Pane pane = new Pane();  //The root of scene graph is a layout node
@@ -126,7 +126,7 @@ public class PoolGame extends Application {
         return pane;
     }
 
-    public void setUpCollision(Ball ball, Ball otherBall) {
+    private void setUpCollision(Ball ball, Ball otherBall) {
         Point2D ballPos = new Point2D(ball.getxPosition(), ball.getyPosition());
         Point2D ballVel = new Point2D(ball.getxVelocity(), ball.getyVelocity());
         double ballMass = ball.getMass();
@@ -149,7 +149,7 @@ public class PoolGame extends Application {
         }
     }
 
-    public Point2D[] collide(Point2D posA, Point2D velA, double massA, Point2D posB, Point2D velB, double massB) {
+    private Point2D[] collide(Point2D posA, Point2D velA, double massA, Point2D posB, Point2D velB, double massB) {
 
         //calculate their mass ratio
         double mR = massB/massA;
@@ -188,21 +188,18 @@ public class PoolGame extends Application {
 
         Point2D newVels[] = new Point2D[2];
 
-        Point2D actualVA = new Point2D(deltaVA.getX()/(massA+massB), deltaVA.getY()/(massA+massB));
-        Point2D actualVB = new Point2D(deltaVB.getX()/(massA+massB), deltaVB.getY()/(massA+massB));
-
         newVels[0] = deltaVA;
         newVels[1] = deltaVB;
 
         return newVels;
     }
 
-    public void moveBall(Ball ball) {
+    private void moveBall(Ball ball) {
         ball.setxPosition((ball.getxPosition()+ball.getxVelocity()));
         ball.setyPosition((ball.getyPosition()+ball.getyVelocity()));
     }
 
-    public void setToRest(Ball ball) {
+    private void setToRest(Ball ball) {
         if (ball.getxVelocity() == 0.0) {
             ball.setxVelocity(restState);
         }
@@ -212,7 +209,7 @@ public class PoolGame extends Application {
         }
     }
 
-    public void fallInPocket(Pane pane, Ball ball, Circle holes[], ArrayList<Ball> poolBalls) {
+    private void fallInPocket(Pane pane, Ball ball, Circle holes[], ArrayList<Ball> poolBalls) {
         for (Circle hole : holes) {
             double distance = calculateDistance(ball.getxPosition(), ball.getyPosition(), hole.getCenterX(), hole.getCenterY());
 
@@ -223,13 +220,13 @@ public class PoolGame extends Application {
         }
     }
 
-    public double calculateDistance(double x1, double y1, double x2, double y2) {
+    private double calculateDistance(double x1, double y1, double x2, double y2) {
         double deltaX = x1 - x2;
         double deltaY = y1 - y2;
         return Math.sqrt((deltaX*deltaX) + (deltaY*deltaY));
     }
 
-    public Point2D getCueDirection(Ball ball, double xVelocity, double yVelocity) {
+    private Point2D getCueDirection(Ball ball, double xVelocity, double yVelocity) {
 
         if (cue.getEndX() >= ball.getxPosition()) {
             xVelocity *= -1;
@@ -242,7 +239,7 @@ public class PoolGame extends Application {
         return new Point2D(xVelocity, yVelocity);
     }
 
-    public Point2D findCueVelocity(Ball ball, Table table) {
+    private Point2D findCueVelocity(Ball ball, Table table) {
 
         double xVelocity = 0;
         double yVelocity = 0;
@@ -277,7 +274,7 @@ public class PoolGame extends Application {
         return getCueDirection(ball, xVelocity, yVelocity);
     }
 
-    public void strikeBall(Ball ball, Table table) {
+    private void strikeBall(Ball ball, Table table) {
 
         Double distance = calculateDistance(ball.getxPosition(), ball.getyPosition(), cue.getStartX(), cue.getStartY());
 
@@ -303,7 +300,7 @@ public class PoolGame extends Application {
         }
     }
 
-    public void bounceOffWalls(Ball ball, Table table) {
+    private void bounceOffWalls(Ball ball, Table table) {
         if ((ball.getxPosition() + 15 + ball.getxVelocity()) >= (table.getWidth()) || (ball.getxPosition() + 15 + ball.getxVelocity()) <= (75)) {
             double xVelocity = ball.getxVelocity();
             ball.setxVelocity(xVelocity *= -1);
@@ -315,7 +312,7 @@ public class PoolGame extends Application {
         }
     }
 
-    public void applyFriction(Ball ball, Table table) {
+    private void applyFriction(Ball ball, Table table) {
         if (ball.getxVelocity() > 0) {
             ball.setxVelocity(ball.getxVelocity() + (table.getFriction()*-(0.001)));
         }
@@ -346,20 +343,17 @@ public class PoolGame extends Application {
         JSONObject objects = getConfig(arguments[0]);
 
         JSONObject tableContents = (JSONObject) objects.get("Table");
-        Table table = new Table(tableContents);
-        JSONObject ballList = (JSONObject) objects.get("Balls");
-        JSONArray balls = (JSONArray) ballList.get("ball");
+        JSONArray balls = (JSONArray) ((JSONObject) objects.get("Balls")).get("ball");
+
+        PoolGameFactory factory = new PoolGameFactory();
+
+        Table table = factory.makeTable(tableContents);
 
         ArrayList<Ball> poolBalls = new ArrayList<>();
 
-        Director director = new Director();
 
         for (int i = 0; i < balls.size(); i++) {
-            //System.out.println(balls.get(i));
-            ConfigReader reader = ConfigReader.getReader(ObjectType.BALL, (JSONObject) balls.get(i));
-            BallBuilder builder = new BallBuilder();
-            director.buildBall(builder, reader.getContents());
-            poolBalls.add(builder.getBall());
+            poolBalls.add(factory.makeBall((JSONObject) balls.get(i)));
         }
 
         try {

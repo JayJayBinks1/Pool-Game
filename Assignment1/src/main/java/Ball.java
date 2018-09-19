@@ -13,14 +13,14 @@ public class Ball {
     private double mass;
     private Circle ball;
 
-    public Ball(String colour, double xPosition, double yPosition, double xVelocity, double yVelocity, double mass) {
+    public Ball(String colour, double xPosition, double yPosition, double xVelocity, double yVelocity, double mass, Circle ball) {
         this.colour = colour;
         this.xPosition = xPosition;
         this.yPosition = yPosition;
         this.xVelocity = xVelocity;
         this.yVelocity = yVelocity;
         this.mass = mass;
-        this.ball = new Circle(this.xPosition, this.yPosition, 15, Paint.valueOf(colour));
+        this.ball = ball;
     }
 
     public String getColour() { return colour; }
@@ -44,10 +44,6 @@ public class Ball {
     }
 
     public void setyVelocity(double yVelocity) { this.yVelocity = yVelocity; }
-
-    public double getxInitialVel() { return xInitialVel; }
-
-    public double getyInitialVel() { return yInitialVel; }
 
     public double getMass() {return this.mass;}
 

@@ -2,27 +2,22 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Shape;
 import org.json.simple.JSONObject;
-
-import java.util.ArrayList;
 
 public class Table {
 
-    private JSONObject tableContents;
     private String colour;
-    private int width;
-    private int height;
-    private int friction;
+    private double width;
+    private double height;
+    private double friction;
     private Rectangle table;
 
-    public Table(JSONObject tableContents) {
-        ConfigReader reader = ConfigReader.getReader(ObjectType.TABLE, tableContents);
-        String contents[] = reader.getContents();
-        this.colour = contents[0];
-        this.width = Integer.parseInt(contents[1]);
-        this.height = Integer.parseInt(contents[2]);
-        this.friction = Integer.parseInt(contents[3]);
+    public Table(String colour, double width, double height, double friction, Rectangle table) {
+
+        this.colour = colour;
+        this.width = width;
+        this.height = height;
+        this.friction = friction;
         this.table = new Rectangle(25, 25, this.width, this.height);
         this.table.setFill(Paint.valueOf(this.colour));
         this.table.setStroke(Color.rgb(165, 70, 7));
@@ -31,11 +26,11 @@ public class Table {
 
     public String getColour() {return this.colour;}
 
-    public int getFriction() {return this.friction;}
+    public double getFriction() {return this.friction;}
 
-    public int getWidth() {return this.width;}
+    public double getWidth() {return this.width;}
 
-    public int getHeight() {return this.height;}
+    public double getHeight() {return this.height;}
 
     public Rectangle getShape() {return this.table;}
 
