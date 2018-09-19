@@ -53,26 +53,31 @@ public class PoolGame extends Application {
     private void adjustBallPositions(Pane pane, ArrayList<Ball> poolBalls, Table table) {
 
         for (Ball ball : poolBalls) {
-            if (ball.getxPosition() <= 50) {
-                ball.setxPosition(ball.getxPosition()+75);
-            }
-            else if (ball.getxPosition() >= table.getWidth()-25) {
-                ball.setxPosition(ball.getxPosition()-25);
+
+            if (ball.getxPosition() <= 50+15) {
+                ball.setxPosition(50+15);
             }
 
-            else if (ball.getxPosition() < (table.getWidth()- 40)) {
-                ball.setxPosition(ball.getxPosition()+25);
+            else if (ball.getxPosition() >= table.getWidth()) {
+                ball.setxPosition(table.getWidth()+50-15);
             }
 
-            if (ball.getyPosition() <= 50) {
-                ball.setyPosition(ball.getyPosition()+75);
+            else {
+                ball.setxPosition(ball.getxPosition()+50);
             }
-            else if (ball.getyPosition() >= table.getHeight()-15) {
-                ball.setyPosition(ball.getyPosition()-25);
+
+            if (ball.getyPosition() <= 50+15) {
+                ball.setyPosition(50+15);
             }
-            else if (ball.getyPosition() < (table.getHeight()-40)){
-                ball.setyPosition(ball.getyPosition()+25);
+
+            else if (ball.getyPosition() >= table.getHeight()) {
+                ball.setyPosition(table.getHeight()+50-15);
             }
+
+            else {
+                ball.setyPosition(ball.getyPosition()+50);
+            }
+
             pane.getChildren().add(ball.getBall());
         }
     }
@@ -103,9 +108,9 @@ public class PoolGame extends Application {
 
         Pane pane = new Pane();  //The root of scene graph is a layout node
         // Creating a Scene by passing the group object, height and width
-        Scene scene = new Scene(pane,tableShape.getWidth()+50,tableShape.getHeight()+50);
+        Scene scene = new Scene(pane,tableShape.getWidth()+100,tableShape.getHeight()+100);
         //setting color to the scene
-        scene.setFill(Color.BLACK);
+        scene.setFill(Color.rgb(165, 70, 7));
 
         pane.getChildren().add(tableShape);
 
@@ -301,12 +306,12 @@ public class PoolGame extends Application {
     }
 
     private void bounceOffWalls(Ball ball, Table table) {
-        if ((ball.getxPosition() + 15 + ball.getxVelocity()) >= (table.getWidth()) || (ball.getxPosition() + 15 + ball.getxVelocity()) <= (75)) {
+        if ((ball.getxPosition() + 15 + ball.getxVelocity()) >= (table.getWidth()+50) || (ball.getxPosition() + 15 + ball.getxVelocity()) <= (75)) {
             double xVelocity = ball.getxVelocity();
             ball.setxVelocity(xVelocity *= -1);
         }
 
-        if ((ball.getyPosition() + 15 + ball.getyVelocity()) >= (table.getHeight()) || (ball.getyPosition() + 15 + ball.getyVelocity()) <= (75)) {
+        if ((ball.getyPosition() + 15 + ball.getyVelocity()) >= (table.getHeight()+50) || (ball.getyPosition() + 15 + ball.getyVelocity()) <= (75)) {
             double yVelocity = ball.getyVelocity();
             ball.setyVelocity(yVelocity *= -1);
         }

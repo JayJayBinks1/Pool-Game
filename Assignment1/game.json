@@ -24,7 +24,7 @@
       {
         "colour": "red",
         "position": {
-          "x": "40",
+          "x": "66",
           "y": "30"
         },
         "velocity": {
@@ -50,7 +50,7 @@
       {
         "colour": "blue",
         "position": {
-          "x": "546",
+          "x": "0",
           "y": "240"
         },
         "velocity": {
@@ -63,7 +63,7 @@
       {
         "colour": "orange",
         "position": {
-          "x": "0",
+          "x": "60",
           "y": "120"
         },
         "velocity": {

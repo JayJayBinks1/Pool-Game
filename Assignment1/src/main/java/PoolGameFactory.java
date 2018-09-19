@@ -26,10 +26,8 @@ public final class PoolGameFactory extends GameFactory {
         double width = Double.parseDouble(dimensions.get("x").toString());
         double height = Double.parseDouble(dimensions.get("y").toString());
         double friction = Double.parseDouble(tableContents.get("friction").toString());
-        Rectangle table = new Rectangle(25, 25, (int)width, (int)height);
+        Rectangle table = new Rectangle(50, 50, (int)width, (int)height);
         table.setFill(Paint.valueOf(colour));
-        table.setStroke(Color.rgb(165, 70, 7));
-        table.setStrokeWidth(50);
 
         return new Table(colour, width, height, friction, table);
     }

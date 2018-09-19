@@ -38,10 +38,10 @@ public class Table {
         int holeNum = 0;
         for (int i = 0; i < 6; i++) {
             if (i == 3) {
-                y += (height-50);
+                y += (height);
                 holeNum = 0;
             }
-            circles[i] = new Circle(x+holeNum*((width-50)/2), y, 35, Color.BLACK);
+            circles[i] = new Circle(x+holeNum*((width)/2), y, 35, Color.BLACK);
             holeNum++;
         }
         return circles;
