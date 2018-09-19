@@ -19,21 +19,21 @@ public final class PoolGameFactory extends GameFactory {
     }
 
     @Override
-    public Table makeTable(JSONObject tableContents) {
+    public Table makeTable(JSONObject tableContents, int edgeWidth) {
 
         String colour = tableContents.get("colour").toString();
         JSONObject dimensions = (JSONObject) tableContents.get("size");
         double width = Double.parseDouble(dimensions.get("x").toString());
         double height = Double.parseDouble(dimensions.get("y").toString());
         double friction = Double.parseDouble(tableContents.get("friction").toString());
-        Rectangle table = new Rectangle(50, 50, (int)width, (int)height);
+        Rectangle table = new Rectangle(edgeWidth, edgeWidth, (int)width, (int)height);
         table.setFill(Paint.valueOf(colour));
 
-        return new Table(colour, width, height, friction, table);
+        return new Table(colour, width, height, friction, edgeWidth, table);
     }
 
     @Override
-    public Ball makeBall(JSONObject ballContents) {
+    public Ball makeBall(JSONObject ballContents, int ballRadius) {
         PoolBallBuilder builder = new PoolBallBuilder();
 
         builder.setColour(ballContents.get("colour").toString());
@@ -48,7 +48,7 @@ public final class PoolGameFactory extends GameFactory {
 
         builder.setMass(Double.parseDouble(ballContents.get("mass").toString()));
 
-        builder.drawBall();
+        builder.drawBall(ballRadius);
 
         return builder.getBall();
     }

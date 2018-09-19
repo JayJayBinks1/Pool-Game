@@ -42,8 +42,8 @@ public class PoolBallBuilder implements BallBuilder {
     }
 
     @Override
-    public void drawBall() {
-        ball = new Circle(this.xPosition, this.yPosition, 15, Paint.valueOf(colour));
+    public void drawBall(int ballRadius) {
+        ball = new Circle(this.xPosition, this.yPosition, ballRadius, Paint.valueOf(colour));
     }
 
     public PoolBall getBall() {

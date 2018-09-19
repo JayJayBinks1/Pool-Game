@@ -6,5 +6,5 @@ public interface BallBuilder {
     void setxVelocity(double xVelocity);
     void setyVelocity(double yVelocity);
     void setMass(double mass);
-    void drawBall();
+    void drawBall(int ballRadius);
 }
