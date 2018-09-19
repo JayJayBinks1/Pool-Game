@@ -4,7 +4,19 @@ import javafx.scene.shape.Rectangle;
 import org.json.simple.JSONObject;
 
 
-public class PoolGameFactory extends GameFactory {
+public final class PoolGameFactory extends GameFactory {
+
+    private static PoolGameFactory instance;
+
+    private PoolGameFactory() {}
+
+    public static PoolGameFactory getInstance() {
+        if (instance == null) {
+            instance = new PoolGameFactory();
+        }
+
+        return instance;
+    }
 
     @Override
     public Table makeTable(JSONObject tableContents) {

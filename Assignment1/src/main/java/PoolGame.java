@@ -345,7 +345,7 @@ public class PoolGame extends Application {
         JSONObject tableContents = (JSONObject) objects.get("Table");
         JSONArray balls = (JSONArray) ((JSONObject) objects.get("Balls")).get("ball");
 
-        PoolGameFactory factory = new PoolGameFactory();
+        PoolGameFactory factory = PoolGameFactory.getInstance();
 
         Table table = factory.makeTable(tableContents);
 

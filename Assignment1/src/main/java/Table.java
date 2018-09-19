@@ -18,10 +18,7 @@ public class Table {
         this.width = width;
         this.height = height;
         this.friction = friction;
-        this.table = new Rectangle(25, 25, this.width, this.height);
-        this.table.setFill(Paint.valueOf(this.colour));
-        this.table.setStroke(Color.rgb(165, 70, 7));
-        this.table.setStrokeWidth(50);
+        this.table = table;
     }
 
     public String getColour() {return this.colour;}
