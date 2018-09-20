@@ -6,8 +6,6 @@ public class Ball {
     private String colour;
     private double xPosition;
     private double yPosition;
-    private double xInitialVel;
-    private double yInitialVel;
     private double xVelocity;
     private double yVelocity;
     private double mass;

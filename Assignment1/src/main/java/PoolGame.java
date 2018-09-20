@@ -325,55 +325,45 @@ public class PoolGame extends Application {
      * velocities
      * NOTE: THIS IS NOT MY OWN WORK AND WAS TAKEN
      * FROM THE ASSIGNMENT SPEC
-     * @param posA x,y position of the first ball
-     * @param velA x,y velocity of the first ball
+     * @param positionA x,y position of the first ball
+     * @param velocityA x,y velocity of the first ball
      * @param massA Mass of the first ball
-     * @param posB x,y position of the second ball
-     * @param velB x,y velocity of the second ball
+     * @param positionB x,y position of the second ball
+     * @param velocityB x,y velocity of the second ball
      * @param massB Mass of the second ball
      * @return Array of size 2, containing new x,y velocities for both balls
      */
-    private Point2D[] collide(Point2D posA, Point2D velA, double massA, Point2D posB, Point2D velB, double massB) {
+    private Point2D[] collide(Point2D positionA, Point2D velocityA, double massA, Point2D positionB, Point2D velocityB, double massB) {
 
-        //calculate their mass ratio
-        double mR = massB/massA;
-
-        //calculate the axis of collision
-        Point2D collisionVector = posB.subtract(posA);
+        // Find the angle of the collision - basically where is ball B relative to ball A. We aren't concerned with
+        // distance here, so we reduce it to unit (1) size with normalize() - this allows for arbitrary radii
+        Point2D collisionVector = positionA.subtract(positionB);
         collisionVector = collisionVector.normalize();
 
-        //the proportion of each balls velocity along the axis of collision
-        double vA = collisionVector.dotProduct(velA);
-        double vB = collisionVector.dotProduct(velB);
+        // Here we determine how 'direct' or 'glancing' the collision was for each ball
+        double vA = collisionVector.dotProduct(velocityA);
+        double vB = collisionVector.dotProduct(velocityB);
 
-        //if balls are moving away from each other
-        if (vA <= 0 && vB >= 0) {
+        // If you don't detect the collision at just the right time, balls might collide again before they leave
+        // each others' collision detection area, and bounce twice. This stops these secondary collisions by detecting
+        // whether a ball has already begun moving away from its pair, and returns the original velocities
+        if (vB <= 0 && vA >= 0) {
             return null;
         }
 
-        //The velocity of each ball after a collision can be found by solving the quadratic equation
-        //given by equating momentum energy and energy before and after the collision and finding the
-        //velocities that satisfy this
-        //-(mR+1)x^2 2*(mR*vB+vA)x -((mR-1)*vB^2+2*vA*vB)=0
-        //first we find the discriminant
-        double a = -(mR + 1);
-        double b = 2 * (mR * vB + vA);
-        double c = -((mR - 1) * vB * vB + 2 * vA * vB);
-        double discriminant = Math.sqrt(b * b - 4 * a * c);
-        double root = (-b + discriminant)/(2 * a);
-        //only one of the roots is the solution, the other pertains to the current velocities
-        if (root - vB < 0.01) {
-            root = (-b - discriminant)/(2 * a);
-        }
+        // This is the optimisation function described in the gamasutra link. Rather than handling the full quadratic
+        // (which as we have discovered allowed for sneaky typos) this is a much simpler - and faster - way of obtaining
+        // the same results.
+        double optimizedP = (2.0 * (vA - vB)) / (massA + massB);
 
-        //The resulting changes in velocity for ball A and B
-        Point2D deltaVA = collisionVector.multiply(mR * (vB - root));
-        Point2D deltaVB = collisionVector.multiply(mR * (root - vB));
+        // Now we apply that calculated function to the pair of balls to obtain their final velocities
+        Point2D velAPrime = velocityA.subtract(collisionVector.multiply(optimizedP).multiply(massB));
+        Point2D velBPrime = velocityB.add(collisionVector.multiply(optimizedP).multiply(massA));
 
         Point2D newVels[] = new Point2D[2];
 
-        newVels[0] = deltaVA;
-        newVels[1] = deltaVB;
+        newVels[0] = velAPrime;
+        newVels[1] = velBPrime;
 
         return newVels;
     }
